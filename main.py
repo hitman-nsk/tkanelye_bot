@@ -65,12 +65,13 @@ async def ask_feeling(callback: CallbackQuery, state: FSMContext):
 async def submit(callback: CallbackQuery, state: FSMContext):
     await state.update_data(feeling=callback.data.split("_")[1])
     data = await state.get_data()
-    text = f"🎯 Новый лид от @{callback.from_user.username}:
-
-" +            f"🏠 Помещение: {data['room']}
-" +            f"🎯 Цель: {data['goal']}
-" +            f"🎨 Стиль: {data['style']}
-" +            f"💭 Эмоции: {data['feeling']}"
+        text = (
+        f"🎯 Новый лид от @{callback.from_user.username}:\n\n"
+        f"🏠 Помещение: {data['room']}\n"
+        f"🎯 Цель: {data['goal']}\n"
+        f"🎨 Стиль: {data['style']}\n"
+        f"💭 Эмоции: {data['feeling']}"
+    )
     await bot.send_message(chat_id=GROUP_ID, text=text)
     await callback.message.answer("✅ Спасибо! Наш дизайнер скоро свяжется с вами.")
     await state.clear()
