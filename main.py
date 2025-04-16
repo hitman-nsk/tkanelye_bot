@@ -19,7 +19,7 @@ class LeadForm(StatesGroup):
     style = State()
     feeling = State()
 
-@dp.message(F.text, state=None)
+@dp.message(F.text)
 async def start(message: Message, state: FSMContext):
     kb = InlineKeyboardBuilder()
     kb.button(text="Начать подбор", callback_data="start")
