@@ -91,7 +91,10 @@ async def fallback_handler(message: Message):
         f"📩 Новый лид от @{message.from_user.username or 'без username'}\n\n"
         f"Сообщение: {message.text}"
     )
+    try:
     await bot.send_message(chat_id=GROUP_ID, text=text)
+except Exception as e:
+    await callback.message.answer(f"Ошибка при отправке в группу:\n<code>{e}</code>", parse_mode="HTML")
 
 # Запуск
 async def main():
