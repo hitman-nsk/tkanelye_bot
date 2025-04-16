@@ -29,6 +29,7 @@ async def start(message: Message, state: FSMContext):
     )
 
 @dp.callback_query(F.data == "start")
+async def submit(callback: CallbackQuery, state: FSMContext):
 async def ask_room(callback: CallbackQuery, state: FSMContext):
     kb = InlineKeyboardBuilder()
     for option in ["Гостиная", "Спальня", "Детская", "Кухня"]:
