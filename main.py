@@ -87,6 +87,7 @@ async def greeting_handler(message: Message):
 
 # Ответ на любое другое сообщение + отправка в группу
 @dp.message()
+@dp.message()
 async def fallback_handler(message: Message):
     await message.answer("Спасибо за сообщение! Я передам его менеджеру, а пока могу помочь с подбором штор 😊")
     text = (
@@ -96,8 +97,7 @@ async def fallback_handler(message: Message):
     try:
         await bot.send_message(chat_id=GROUP_ID, text=text)
     except Exception as e:
-        await callback.message.answer(f"Ошибка при отправке в группу:\n<code>{e}</code>", parse_mode="HTML")
-
+        await message.answer(f"❌ Ошибка при отправке в группу:\n<code>{e}</code>", parse_mode="HTML")
 # Запуск
 async def main():
     logging.basicConfig(level=logging.INFO)
