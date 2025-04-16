@@ -8,7 +8,7 @@ import asyncio
 import logging
 
 TOKEN = "7834299472:AAEUy5elgxbEvtmcbRqEi9U0j6MFRgCyiPo"
-GROUP_ID = "-1001657670940"  # Telegram group ID
+GROUP_ID = -1001260252066  # ← ваш chat_id группы
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -23,7 +23,10 @@ class LeadForm(StatesGroup):
 async def start(message: Message, state: FSMContext):
     kb = InlineKeyboardBuilder()
     kb.button(text="Начать подбор", callback_data="start")
-    await message.answer("🤍 Приветствуем вас в Фабрике Тканелье! Хотите подобрать идеальные шторы?", reply_markup=kb.as_markup())
+    await message.answer(
+        "🤍 Приветствуем вас в Фабрике Тканелье! Хотите подобрать идеальные шторы?",
+        reply_markup=kb.as_markup()
+    )
 
 @dp.callback_query(F.data == "start")
 async def ask_room(callback: CallbackQuery, state: FSMContext):
@@ -64,47 +67,33 @@ async def ask_feeling(callback: CallbackQuery, state: FSMContext):
 async def submit(callback: CallbackQuery, state: FSMContext):
     await state.update_data(feeling=callback.data.split("_")[1])
     data = await state.get_data()
-    text = f"🎯 Новый лид от @{callback.from_user.username}:\n\n" + \
-           f"🏠 Помещение: {data['room']}\n" + \
-           f"🎯 Цель: {data['goal']}\n" + \
-           f"🎨 Стиль: {data['style']}\n" + \
-           f"💭 Эмоции: {data['feeling']}"
+    text = (
+        f"🎯 Новый лид от @{callback.from_user.username or 'без username'}:\n\n"
+        f"🏠 Помещение: {data['room']}\n"
+        f"🎯 Цель: {data['goal']}\n"
+        f"🎨 Стиль: {data['style']}\n"
+        f"💭 Эмоции: {data['feeling']}"
+    )
     await bot.send_message(chat_id=GROUP_ID, text=text)
     await callback.message.answer("✅ Спасибо! Наш дизайнер скоро свяжется с вами.")
     await state.clear()
-from aiogram import types
 
-from aiogram import F
-from aiogram.types import Message
-from aiogram import types
-
-GROUP_ID = -1001260252066  # ← ваш chat_id группы
-
-# Обработка приветствий и типичных вопросов
+# Ответы на приветствия
 @dp.message(F.text.lower().in_({"привет", "ау", "ты можешь общаться с клиентами?", "здравствуйте"}))
-async def greeting_handler(message: types.Message):
+async def greeting_handler(message: Message):
     await message.answer("👋 Да, я ваш помощник от Фабрики Тканелье.\nГотов помочь с подбором штор!")
 
-# Обработка любых других сообщений (fallback)
+# Ответ на любое другое сообщение + отправка в группу
 @dp.message()
-async def fallback_handler(message: types.Message):
+async def fallback_handler(message: Message):
     await message.answer("Спасибо за сообщение! Я передам его менеджеру, а пока могу помочь с подбором штор 😊")
-
-    # Отправка лида в группу
     text = (
         f"📩 Новый лид от @{message.from_user.username or 'без username'}\n\n"
         f"Сообщение: {message.text}"
     )
     await bot.send_message(chat_id=GROUP_ID, text=text)
 
-@dp.message(F.text.lower().in_(['привет', 'ау', 'ты можешь общаться с клиентами?']))
-async def handle_greeting(message: Message):
-    await message.answer("👋 Да, я ваш помощник от Фабрики Тканелье.\nГотов помочь с подбором штор — нажмите «Начать подбор» или напишите вопрос.")
-
-@dp.message()
-async def handle_any_message(message: Message):
-    await message.answer("Спасибо за сообщение! Я передам его менеджеру, а пока могу помочь с подбором штор 😊")
-
+# Запуск
 async def main():
     logging.basicConfig(level=logging.INFO)
     await dp.start_polling(bot)
