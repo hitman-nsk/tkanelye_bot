@@ -65,7 +65,7 @@ async def ask_feeling(callback: CallbackQuery, state: FSMContext):
 async def submit(callback: CallbackQuery, state: FSMContext):
     await state.update_data(feeling=callback.data.split("_")[1])
     data = await state.get_data()
-        text = (
+     text = (
         f"🎯 Новый лид от @{callback.from_user.username}:\n\n"
         f"🏠 Помещение: {data['room']}\n"
         f"🎯 Цель: {data['goal']}\n"
