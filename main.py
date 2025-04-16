@@ -74,14 +74,15 @@ async def submit(callback: CallbackQuery, state: FSMContext):
     await state.clear()
 from aiogram import types
 
-# Обработка приветствий и вопросов
-@dp.message_handler(lambda msg: msg.text.lower() in ["привет", "ау", "ты можешь общаться с клиентами?"])
-async def greeting_handler(message: types.Message):
+from aiogram import F
+from aiogram.types import Message
+
+@dp.message(F.text.lower().in_(['привет', 'ау', 'ты можешь общаться с клиентами?']))
+async def handle_greeting(message: Message):
     await message.answer("👋 Да, я ваш помощник от Фабрики Тканелье.\nГотов помочь с подбором штор — нажмите «Начать подбор» или напишите вопрос.")
 
-# Общий fallback на любое другое сообщение
-@dp.message_handler()
-async def fallback_handler(message: types.Message):
+@dp.message()
+async def handle_any_message(message: Message):
     await message.answer("Спасибо за сообщение! Я передам его менеджеру, а пока могу помочь с подбором штор 😊")
 
 async def main():
