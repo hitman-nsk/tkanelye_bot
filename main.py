@@ -27,11 +27,10 @@ async def start(message: Message, state: FSMContext):
 
 @dp.callback_query(F.data == "start")
 async def ask_room(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer("🕊️ Где вы планируете использовать шторы?")
     kb = InlineKeyboardBuilder()
     for option in ["Гостиная", "Спальня", "Детская", "Кухня"]:
         kb.button(text=option, callback_data=f"room_{option}")
-    await callback.message.answer("Выберите помещение:", reply_markup=kb.as_markup())
+    await callback.message.answer("🕊️ Где вы планируете использовать шторы?", reply_markup=kb.as_markup())
     await state.set_state(LeadForm.room)
 
 @dp.callback_query(F.data.startswith("room_"))
@@ -65,13 +64,18 @@ async def ask_feeling(callback: CallbackQuery, state: FSMContext):
 async def submit(callback: CallbackQuery, state: FSMContext):
     await state.update_data(feeling=callback.data.split("_")[1])
     data = await state.get_data()
-            text = (
-            f"🎯 Новый лид от @{callback.from_user.username}:\n\n"
-            f"🏠 Помещение: {data['room']}\n"
-            f"🎯 Цель: {data['goal']}\n"
-            f"🎨 Стиль: {data['style']}\n"
-            f"💭 Эмоции: {data['feeling']}"
-        )
+    text = (
+        f"🎯 Новый лид от @{callback.from_user.username}:
+
+"
+        f"🏠 Помещение: {data['room']}
+"
+        f"🎯 Цель: {data['goal']}
+"
+        f"🎨 Стиль: {data['style']}
+"
+        f"💭 Эмоции: {data['feeling']}"
+    )
     await bot.send_message(chat_id=GROUP_ID, text=text)
     await callback.message.answer("✅ Спасибо! Наш дизайнер скоро свяжется с вами.")
     await state.clear()
