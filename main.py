@@ -29,14 +29,15 @@ async def start(message: Message, state: FSMContext):
     )
 
 @dp.callback_query(F.data == "start")
-async def submit(callback: CallbackQuery, state: FSMContext):
 async def ask_room(callback: CallbackQuery, state: FSMContext):
     kb = InlineKeyboardBuilder()
     for option in ["Гостиная", "Спальня", "Детская", "Кухня"]:
         kb.button(text=option, callback_data=f"room_{option}")
-    await callback.message.answer("🕊️ Где вы планируете использовать шторы?", reply_markup=kb.as_markup())
+    await callback.message.answer(
+        "🕊️ Где вы планируете использовать шторы?",
+        reply_markup=kb.as_markup()
+    )
     await state.set_state(LeadForm.room)
-
 @dp.callback_query(F.data.startswith("room_"))
 async def ask_goal(callback: CallbackQuery, state: FSMContext):
     await state.update_data(room=callback.data.split("_")[1])
