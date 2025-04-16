@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
