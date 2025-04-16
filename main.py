@@ -76,6 +76,26 @@ from aiogram import types
 
 from aiogram import F
 from aiogram.types import Message
+from aiogram import types
+
+GROUP_ID = -1001260252066  # ← ваш chat_id группы
+
+# Обработка приветствий и типичных вопросов
+@dp.message(F.text.lower().in_({"привет", "ау", "ты можешь общаться с клиентами?", "здравствуйте"}))
+async def greeting_handler(message: types.Message):
+    await message.answer("👋 Да, я ваш помощник от Фабрики Тканелье.\nГотов помочь с подбором штор!")
+
+# Обработка любых других сообщений (fallback)
+@dp.message()
+async def fallback_handler(message: types.Message):
+    await message.answer("Спасибо за сообщение! Я передам его менеджеру, а пока могу помочь с подбором штор 😊")
+
+    # Отправка лида в группу
+    text = (
+        f"📩 Новый лид от @{message.from_user.username or 'без username'}\n\n"
+        f"Сообщение: {message.text}"
+    )
+    await bot.send_message(chat_id=GROUP_ID, text=text)
 
 @dp.message(F.text.lower().in_(['привет', 'ау', 'ты можешь общаться с клиентами?']))
 async def handle_greeting(message: Message):
