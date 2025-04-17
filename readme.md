@@ -1,1 +1,3 @@
-# Telegram Content Bot with GPT Chain\n\nОбрабатывает текст и запускает цепочку GPT-ассистентов.
+# Telegram GPT Bot (Stable)
+
+Использует openai==0.28 для стабильной работы с aiogram и старым API.
