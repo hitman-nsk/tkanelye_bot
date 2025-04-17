@@ -43,9 +43,7 @@ async def handle_message(message: Message):
         # Шаг 3: SMM
         final_output = await query_gpt(PROMPTS["smm"], marketing_output)
 
-        await message.answer("✅ Готово! Вот результат:
-
-" + final_output)
+        await message.answer("✅ Готово! Вот результат:\n\n" + final_output)
 
     except Exception as e:
         await message.answer(f"⚠️ Ошибка при генерации: {e}")
