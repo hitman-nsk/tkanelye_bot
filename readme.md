@@ -1,3 +1,3 @@
-# Telegram Bot with GPT + Midjourney (FINAL FIXED)
+# Minimal Telegram Bot for Midjourney
 
-Кавычки исправлены. Можно деплоить.
+Без GPT. Отправляет текстовые промпты в Discord Webhook.
