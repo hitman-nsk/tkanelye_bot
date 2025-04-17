@@ -54,7 +54,7 @@ async def handle_message(message: Message):
         # Отправка промпта в Midjourney (берём описание из SMM)
         mj_feedback = send_prompt_to_midjourney(smm_output)
 
-        await message.answer("✅ Готово!
+        await message.answer("✅ Готово!")
 
 " + smm_output + "
 
