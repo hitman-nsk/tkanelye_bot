@@ -1,3 +1,3 @@
-# Telegram GPT Bot (GPT-3.5)
+# Telegram Bot with GPT + Midjourney
 
-Использует gpt-3.5-turbo для стабильной генерации контента.
+Отправляет визуальные промпты в Discord через Webhook.
