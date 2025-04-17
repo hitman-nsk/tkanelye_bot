@@ -1,25 +1,54 @@
 import os
-from aiogram import Bot, Dispatcher, types
+import openai
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.enums import ParseMode
 from aiogram.types import Message
-from aiogram import F
 import asyncio
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
-@dp.message(F.text | F.photo | F.video)
+# Системные промпты для GPT-сотрудников
+PROMPTS = {
+    "content_creator": "Ты креативный сценарист и копирайтер. Придумай идею, заголовок и структуру текста на тему, которую прислал пользователь.",
+    "marketer": "Ты маркетолог. Возьми текст и усили его: добавь УТП, триггеры, оффер и ориентируй на продажу. Не переписывай всё, а усили смысл.",
+    "smm": "Ты эксперт по Telegram и Instagram. Адаптируй текст под формат Telegram, добавь хэштеги, предложения по визуалу. Сделай текст живым и вовлекающим."
+}
+
+async def query_gpt(role_prompt, user_input):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": role_prompt},
+            {"role": "user", "content": user_input}
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+@dp.message(F.text)
 async def handle_message(message: Message):
-    if message.text:
-        await message.answer("📝 Принял текст, начинаем обработку...")
-    elif message.photo:
-        await message.answer("📷 Получено фото. Спасибо!")
-    elif message.video:
-        await message.answer("🎥 Видео получено. Обрабатываю...")
-    else:
-        await message.answer("Получено сообщение, спасибо!")
+    user_input = message.text
+    await message.answer("🧠 Обрабатываю ваш запрос через команду GPT-сотрудников...")
+
+    try:
+        # Шаг 1: Content Creator
+        content_output = await query_gpt(PROMPTS["content_creator"], user_input)
+
+        # Шаг 2: Маркетолог
+        marketing_output = await query_gpt(PROMPTS["marketer"], content_output)
+
+        # Шаг 3: SMM
+        final_output = await query_gpt(PROMPTS["smm"], marketing_output)
+
+        await message.answer("✅ Готово! Вот результат:
+
+" + final_output)
+
+    except Exception as e:
+        await message.answer(f"⚠️ Ошибка при генерации: {e}")
 
 async def main():
     await dp.start_polling(bot)
